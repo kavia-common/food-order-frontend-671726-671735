@@ -1,48 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import './styles/theme.css';
+import './styles/app.css';
+import Header from './components/Header';
+import Menu from './components/Menu';
+import Cart from './components/Cart';
+import OrderModal from './components/OrderModal';
+import { CartProvider } from './context/CartContext';
 
 // PUBLIC_INTERFACE
 function App() {
-  const [theme, setTheme] = useState('light');
+  /** Root app for Food Ordering UI with Ocean Professional theme. */
+  const [isCartOpen, setCartOpen] = useState(false);
+  const [isOrderOpen, setOrderOpen] = useState(false);
 
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  const openCart = () => setCartOpen(true);
+  const closeCart = () => setCartOpen(false);
+  const openOrder = () => setOrderOpen(true);
+  const closeOrder = () => setOrderOpen(false);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <CartProvider>
+      <div className="app-shell">
+        <Header onCartClick={openCart} />
+        <main className="container">
+          <Menu onOpenCart={openCart} onOpenOrder={openOrder} />
+        </main>
+
+        <Cart isOpen={isCartOpen} onClose={closeCart} onCheckout={openOrder} />
+        <OrderModal isOpen={isOrderOpen} onClose={closeOrder} />
+        <footer className="footer">
+          <div className="container footer-inner">
+            <p>© {new Date().getFullYear()} Ocean Eats. All rights reserved.</p>
+          </div>
+        </footer>
+      </div>
+    </CartProvider>
   );
 }
 
